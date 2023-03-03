@@ -41,7 +41,6 @@ public class Homework7 {
   public ResponseEntity<Map<String, String>> deleteUser(@PathVariable("id") int id) {
     // 削除処理は省略
     return ResponseEntity.ok(Map.of("message", "name successfully deleted"));
-
   }
 }
 
