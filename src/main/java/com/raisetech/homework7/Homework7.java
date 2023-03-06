@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -19,7 +20,7 @@ public class Homework7 {
 
   @GetMapping("/users")
   public Map<String, String> user(@RequestParam("name") @NotBlank(message = "名前を入力してください")
-                                  @Size(max = 20, message = "20文字以内で入力してください") String name,
+                                  @Size(max = 20, message = "20文字以内で入力してください") String name, BindingResult result,
                                   @RequestParam("birthday")
                                   @Pattern(regexp = "^(19|20[0-9]{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$")
                                   @DateTimeFormat(pattern = "yyyyMMdd")
@@ -27,7 +28,11 @@ public class Homework7 {
                                   String birthday,
                                   @RequestParam("address")
                                   String address) {
-    return Map.of("name", name, "birthday", birthday, "address", address);
+    if (result.hasErrors()) {
+      return Map.of("message", "名前を入力してください、20文字以内で入力してください");
+    } else {
+      return Map.of("name", name, "birthday", birthday, "address", address);
+    }
   }
 
   @PostMapping("/users")
