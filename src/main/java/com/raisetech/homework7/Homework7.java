@@ -34,7 +34,7 @@ public class Homework7 {
 
 
   @PostMapping("/users")
-  public ResponseEntity<Map<String, String>> createUser(@RequestBody CreateForm form, UriComponentsBuilder uriBuilder) {
+  public ResponseEntity<Map<String, String>> createUser(@RequestBody @Validated CreateForm form, UriComponentsBuilder uriBuilder) {
     // 登録処理は省略
     URI url = uriBuilder.path("/users/id") // id部分は実際に登録された際に発⾏したidを設定する
         .build()
