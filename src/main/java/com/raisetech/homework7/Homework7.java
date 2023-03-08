@@ -4,13 +4,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Validated
@@ -19,20 +19,19 @@ public class Homework7 {
 
   @GetMapping("/users")
   public Map<String, String> user(@RequestParam("name") @NotBlank(message = "名前を入力してください")
-                                  @Size(max = 20, message = "20文字以内で入力してください") String name, BindingResult result,
+                                  @Size(max = 20, message = "20文字以内で入力してください") String name,
                                   @RequestParam("birthday")
                                   @Pattern(regexp = "^(19[0-9]{2}|20[0-9]{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$")
                                   String birthday,
                                   @RequestParam("address")
                                   String address) {
-    SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
-    String formatBirthday = outputDateFormat.format(birthday);
-    if (result.hasErrors()) {
-      return Map.of("message", "名前を入力してください、20文字以内で入力してください");
-    } else {
-      return Map.of("name", name, "birthday", formatBirthday, "address", address);
-    }
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    LocalDate birthdayToLocalDate = LocalDate.parse(birthday, formatter);
+    formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
+    String formatBirthday = birthdayToLocalDate.format(formatter);
+    return Map.of("name", name, "birthday", formatBirthday, "address", address);
   }
+
 
   @PostMapping("/users")
   public ResponseEntity<Map<String, String>> createUser(@RequestBody CreateForm form, UriComponentsBuilder uriBuilder) {
