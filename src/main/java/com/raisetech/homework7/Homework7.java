@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -17,6 +18,7 @@ import java.util.Map;
 @RestController
 public class Homework7 {
 
+  //
   @GetMapping("/users")
   public Map<String, String> user(@RequestParam("name") @NotBlank(message = "名前を入力してください")
                                   @Size(max = 20, message = "20文字以内で入力してください") String name,
@@ -34,12 +36,16 @@ public class Homework7 {
 
 
   @PostMapping("/users")
-  public ResponseEntity<Map<String, String>> createUser(@RequestBody @Validated CreateForm form, UriComponentsBuilder uriBuilder) {
+  public ResponseEntity<Map<String, String>> createUser(@Validated @RequestBody CreateForm form, UriComponentsBuilder uriBuilder, BindingResult result) {
     // 登録処理は省略
+    if (result.hasErrors()) { //何故かhasErrors()がtrueにならない
+      System.out.println("ok"); //プリントデバック用
+      return ResponseEntity.badRequest().body(Map.of("message", "入力に誤りがあります"));
+    }
     URI url = uriBuilder.path("/users/id") // id部分は実際に登録された際に発⾏したidを設定する
         .build()
         .toUri();
-    return ResponseEntity.created(url).body(Map.of("massage", "name successfully created"));
+    return ResponseEntity.created(url).body(Map.of("message", "name successfully created"));
   }
 
   @PatchMapping("/users/{id}")
